@@ -84,8 +84,9 @@ export class MeasuresGraph extends Component {
     });
 
     xAxisDay.selectAll('line').remove();
+    xAxisDay.selectAll('text').style('opacity', 1);
     xAxisDay.selectAll('text').each(function (d, i) {
-      if (i % 2 == 0) d3.select(this).remove();
+      if (i % 2 == 0) d3.select(this).style('opacity', 0);
     });
 
     let xAxisMonth = d3
@@ -101,8 +102,9 @@ export class MeasuresGraph extends Component {
       });
     xAxisMonth.selectAll('path').remove();
     xAxisMonth.selectAll('line').remove();
+    xAxisMonth.selectAll('text').style('opacity', 1);
     xAxisMonth.selectAll('text').each(function (d, i) {
-      if (i % 2 == 0) d3.select(this).remove();
+      if (i % 2 == 0) d3.select(this).style('opacity', 0);
     });
 
     let yAxis = d3.select(this.refs.yAxis).call(d3.axisLeft(this.state.yScale));
@@ -282,13 +284,7 @@ export class MeasuresGraph extends Component {
   }
 
   mouseOutMeasureLine() {
-    d3.select('.measureTextDiv')
-      .transition()
-      .delay(1000)
-      .duration(750)
-      .ease(d3.easeLinear)
-      .style('opacity', 0);
-
+    d3.select('.measureTextDiv').transition().delay(2000).style('opacity', 0);
     d3.selectAll('.measureLine').attr('opacity', 1);
   }
 
