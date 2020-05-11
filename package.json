@@ -30,5 +30,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "d3": "^5.16.0",
+    "g-sheets-api": "^1.2.0"
   }
 }
