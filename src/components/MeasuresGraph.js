@@ -11,7 +11,7 @@ export class MeasuresGraph extends Component {
     height: 1000,
     innerHeight: 1000,
     innerWidth: 1000,
-    margin: { right: 50, top: 120, left: 100, bottom: 240 },
+    margin: { right: 50, top: 120, left: 100, bottom: 280 },
     xScale: d3.scaleBand(),
     yScale: d3.scaleLinear(),
     yTimeScale: d3.scaleTime(),
@@ -29,7 +29,7 @@ export class MeasuresGraph extends Component {
     let innerWidth = width - this.state.margin.left - this.state.margin.right;
 
     data.then((result, error) => {
-      result.map(d => {
+      result.forEach(d => {
         let dateParts = d.Data.split('/');
         d.Data = `${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`;
         d.Formated_Date = new Date(d.Data);
@@ -86,7 +86,7 @@ export class MeasuresGraph extends Component {
     xAxisDay.selectAll('line').remove();
     xAxisDay.selectAll('text').style('opacity', 1);
     xAxisDay.selectAll('text').each(function (d, i) {
-      if (i % 2 == 0) d3.select(this).style('opacity', 0);
+      if (i % 2 === 0) d3.select(this).style('opacity', 0);
     });
 
     let xAxisMonth = d3
@@ -97,14 +97,13 @@ export class MeasuresGraph extends Component {
       .selectAll('text')
       .attr('dy', 30)
       .text(d => {
-        let dateParts = d.split('/');
         return `${d3.timeFormat('%b')(new Date(d))}`;
       });
     xAxisMonth.selectAll('path').remove();
     xAxisMonth.selectAll('line').remove();
     xAxisMonth.selectAll('text').style('opacity', 1);
     xAxisMonth.selectAll('text').each(function (d, i) {
-      if (i % 2 == 0) d3.select(this).style('opacity', 0);
+      if (i % 2 === 0) d3.select(this).style('opacity', 0);
     });
 
     let yAxis = d3.select(this.refs.yAxis).call(d3.axisLeft(this.state.yScale));
@@ -248,7 +247,7 @@ export class MeasuresGraph extends Component {
               y1={0}
               y2={this.state.innerHeight}
               strokeWidth={5}
-              stroke={d.Funcao == 'Fechar' ? '#FD3F44' : '#FFBE40'}
+              stroke={d.Funcao === 'Fechar' ? '#FD3F44' : '#FFBE40'}
               strokeDasharray={'10, 5'}
               display={!d.Medida ? 'none' : 'inline'}
               onMouseOver={() => this.mouseOverMeasureLine(d)}
@@ -269,7 +268,7 @@ export class MeasuresGraph extends Component {
         height={155}
       >
         <div className={'measureTextDiv'}>
-          <p className="measureText measureTitle">Medida:</p>
+          <p className="measureText measureTitle"></p>
           <p className="measureText measureValue"></p>
         </div>
       </foreignObject>
@@ -277,24 +276,35 @@ export class MeasuresGraph extends Component {
   }
 
   mouseOverMeasureLine(d) {
-    d3.select('.measureTextDiv').style('opacity', 1);
+    d3.select('.measureTextDiv')
+      .style('opacity', 1)
+      .style('background-color', d.Funcao === 'Fechar' ? '#FD3F44' : '#FFBE40');
     d3.select('.measureValue').text(d.Medida);
+    d3.select('.measureTitle').text(
+      d.Funcao === 'Fechar' ? 'Medida de Fechamento:' : 'Medida de Abertura:'
+    );
     d3.selectAll('.measureLine').attr('opacity', 0.5);
     d3.select(this.refs[d.Data]).attr('opacity', 1);
   }
 
   mouseOutMeasureLine() {
-    d3.select('.measureTextDiv').transition().delay(2000).style('opacity', 0);
+    d3.select('.measureTextDiv').style('opacity', 0);
     d3.selectAll('.measureLine').attr('opacity', 1);
   }
 
-  renderFooter(group) {
+  renderFooter() {
     return (
       <g
         className="footerG"
         transform={`translate(0, ${this.state.innerHeight + 70})`}
       >
-        <line className="subtitleLineClose" x1={0} y1={0} x2={20} y2={0}></line>
+        <line
+          className="subtitleLineClose"
+          x1={0}
+          y1={0}
+          x2={this.state.xScale.bandwidth() / 2}
+          y2={0}
+        ></line>
         <text
           className="subtitleLineTextClose"
           x={40}
@@ -332,9 +342,8 @@ export class MeasuresGraph extends Component {
           y={70}
           alignmentBaseline="central"
         >
-          Óbitos
+          Óbitos Diários
         </text>
-
         <rect
           className="subtitleLine"
           x={7}
@@ -348,15 +357,30 @@ export class MeasuresGraph extends Component {
           y={105}
           alignmentBaseline="central"
         >
-          Internados na UTI
+          Atuais Internações na UTI
+        </text>
+        <rect
+          className="subtitleRect"
+          x={7}
+          y={135}
+          width={this.state.xScale.bandwidth() / 2}
+          height={this.state.xScale.bandwidth() / 2}
+        ></rect>
+        <text
+          className="subtitleTextRect"
+          x={40}
+          y={140}
+          alignmentBaseline="central"
+        >
+          Casos Diários Confirmados
         </text>
         <image
           x={this.state.innerWidth - 120}
-          y={115}
+          y={155}
           href={logo}
           width={150}
         ></image>
-        <text className="simular" x={-85} y={150} onClick={this.clickSimulator}>
+        <text className="simular" x={-85} y={190} onClick={this.clickSimulator}>
           > SIMULAR FUTURO DE POA
         </text>
       </g>
